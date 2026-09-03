@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Lost Sock Embassy</title>
+  <style>
+    :root {
+      --ink: #1a1208;
+      --paper: #f4e7c8;
+      --stamp: #b42318;
+      --gold: #c9a227;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 20% 10%, #fff6dc 0, transparent 40%),
+        radial-gradient(circle at 90% 80%, #ead7a2 0, transparent 35%),
+        var(--paper);
+    }
+    header {
+      text-align: center;
+      padding: 2.5rem 1.25rem 1rem;
+    }
+    .seal {
+      width: 88px;
+      height: 88px;
+      margin: 0 auto 1rem;
+      border: 4px dashed var(--stamp);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 2.2rem;
+      background: #fffaf0;
+      transform: rotate(-8deg);
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      letter-spacing: 0.04em;
+    }
+    .subtitle {
+      margin: 0.4rem 0 0;
+      font-style: italic;
+      opacity: 0.8;
+    }
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 1.25rem 3rem;
+    }
+    .card {
+      background: #fffaf0;
+      border: 2px solid #d8c08a;
+      box-shadow: 8px 8px 0 #d4b56a;
+      padding: 1.25rem 1.4rem;
+      margin-top: 1.25rem;
+    }
+    button {
+      cursor: pointer;
+      background: var(--stamp);
+      color: #fffaf0;
+      border: 0;
+      padding: 0.7rem 1.1rem;
+      font: inherit;
+      font-weight: 700;
+      box-shadow: 3px 3px 0 var(--ink);
+    }
+    button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+    #verdict {
+      min-height: 3.2rem;
+      margin-top: 0.9rem;
+      font-size: 1.15rem;
+    }
+    footer {
+      text-align: center;
+      padding: 0 1rem 2rem;
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="seal" aria-hidden="true">🧦</div>
+    <h1>The Lost Sock Embassy</h1>
+    <p class="subtitle">Official diplomatic mission of the Left Foot Alliance</p>
+  </header>
+  <main>
+    <section class="card">
+      <h2>Today's communique</h2>
+      <p>
+        The dryer claims it is a neutral zone. We have evidence. The lint trap
+        has been whispering. Several striped operatives remain unaccounted for.
+      </p>
+      <p>
+        If you are holding a sock without its pair, you are in violation of
+        Laundry Accord 7B. Please report to the hamper immediately.
+      </p>
+    </section>
+    <section class="card">
+      <h2>File a missing-sock report</h2>
+      <p>Press the official button. A consul will invent a verdict.</p>
+      <button type="button" id="report">Request diplomatic immunity</button>
+      <p id="verdict" role="status"></p>
+    </section>
+  </main>
+  <footer>Not affiliated with any actual dryer. The dryer declined comment.</footer>
+  <script>
+    const lines = [
+      "Verdict: the sock is on holiday in a dimension made of static cling.",
+      "Verdict: your washing machine ate it. It will not apologize.",
+      "Verdict: the pair is fine. It simply prefers to live separately now.",
+      "Verdict: classified. Also, check inside the duvet. We never said that.",
+      "Verdict: granted. You may wear mismatching socks in public with pride."
+    ];
+    document.getElementById("report").addEventListener("click", function () {
+      const line = lines[Math.floor(Math.random() * lines.length)];
+      document.getElementById("verdict").textContent = line;
+    });
+  </script>
+</body>
+</html>
