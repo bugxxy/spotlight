@@ -38,13 +38,15 @@ Treat the five lines as a deck.
 
 Guarantee: no verdict repeats until every verdict has been shown once in the current cycle.
 
+That guarantee is scoped to one cycle. It is not a promise about every sliding window of five clicks in the visit.
+
 ### How to pick
 
 1. At the start of a cycle, shuffle a copy of `lines` into an order. That order is the cycle. Keep an index at 0.
 2. On each click, show the line at the current index, then increment the index.
 3. Do not call Math.random() against the full list on each click. Take the next card.
 
-A tester checking a fresh visit with five lines must see five distinct verdicts on the first five clicks.
+A tester checking a fresh visit with five lines must see five distinct verdicts on clicks 1-5. The same check applies to clicks 6-10, 11-15, and every later cycle-aligned block of five. Do not run that check on a block that starts mid-cycle.
 
 ---
 
@@ -60,6 +62,18 @@ When a click shows the last unused line of the current shuffle, the cycle is com
 
 There is no empty state and no come-back-later message. The embassy talks through the whole list, then talks through it again.
 
+### Seam residual (explicit)
+
+The join constraint compares the new cycle's first line against one line only: the last line shown. Every other recent line is a legal opener.
+
+Decision: that residual is allowed.
+
+Reason: a new shuffle has to be free to reuse lines from earlier in the previous cycle. Forbidding only the immediately previous line stops a back-to-back repeat. It does not stop a repeat inside a three-click or five-click window that sits on the join.
+
+With N = 5, clicks 5-7 can be D, B, D. That is a conforming page. Clicks 2-6 in the walkthrough below are A, E, B, D, B. That is also conforming. A tester who fails the page for those windows is applying the cycle rule to the wrong window.
+
+Do not tighten the join further in this plan. Killing every short-window repeat at the seam would force the next cycle to avoid several recent lines, or to replay the same order. That is a different rule. This plan keeps "new shuffle, no back-to-back."
+
 ### When there is only one line
 
 Decision: show that line on every click.
@@ -74,7 +88,7 @@ Decision: a refresh resets what has been shown.
 
 Reason: simpler. Shown-state lives in page memory for this visit only. Reload, close the tab, or open a new visit and the deck is new.
 
-Do not write the shown set to localStorage, a cookie, or a server. The defect named in the ticket is a repeat inside one sitting, within three clicks - not a repeat across days.
+Do not write the shown set to localStorage, a cookie, or a server. Repeats across visits are accepted. Repeats inside one cycle of one sitting are not. Repeats that only appear because a new cycle started are accepted, as section 3 states.
 
 This matches what the page already does with persistence: none. Only the pick rule changes.
 
@@ -90,15 +104,15 @@ One of the five lines. `#verdict` was empty; it now holds that line. That line i
 
 ### Clicks 2 through 5 of the first cycle
 
-Each click shows a line that has not appeared yet in this visit's cycle. After click 5, every line has appeared exactly once.
+Each click shows a line that has not appeared yet in this visit's first cycle. After click 5, every line has appeared exactly once in clicks 1-5.
 
 ### Tenth click
 
-Click 10 is the fifth click of the second cycle (clicks 1-5 first cycle, 6-10 second). It is a line that has not appeared in the second cycle yet, and it is not the same line as click 9. After click 10 the second cycle is complete.
+Click 10 is the fifth click of the second cycle (clicks 1-5 first cycle, 6-10 second). Inside clicks 6-10 the five lines are each shown once. Click 10 is not the same line as click 9. After click 10 the second cycle is complete.
 
 ### Click after the last line of a cycle
 
-That is click 6, 11, 16, and so on - the first card of a new shuffle. It is not the line just shown.
+That is click 6, 11, 16, and so on - the first card of a new shuffle. It is not the line just shown. It may be a line from earlier in the previous cycle.
 
 ### Every click when the list has one line
 
@@ -113,6 +127,17 @@ That one line. Repeating it is correct.
 - Click 1: say C.
 - Clicks 2-5: the other four, each once, e.g. A, E, B, D.
 - Click 6: new shuffle that does not start with D. Example: B, C, E, A, D.
+- Clicks 1-5 = C, A, E, B, D - five distinct. Pass.
+- Clicks 6-10 = B, C, E, A, D - five distinct. Pass.
+- Clicks 2-6 = A, E, B, D, B - B twice. Pass. This window sits on the seam; the cycle rule does not apply to it.
+- Clicks 5-7 = D, B, C - no back-to-back. If the opener had been B and click 7 were D, D, B, D would also pass.
 - Refresh before click 6: memory gone. Next click is click 1 of a new visit.
 
-A tester does not need the shuffle seed. They only check: no duplicate inside a run of five; no back-to-back repeat when there is more than one line; a one-line list stays that line; reload starts clean.
+### Tester checks (only these)
+
+A tester does not need the shuffle seed. Score the page against this list and nothing else:
+
+1. In each cycle-aligned block of N clicks (1-5, 6-10, 11-15, ...) every line appears once. Do not score a sliding window that starts mid-cycle.
+2. No back-to-back repeat when N > 1, including the click that opens a new cycle.
+3. When N = 1, every click is that one line.
+4. After a reload, `#verdict` is empty and the next click starts a new cycle.
