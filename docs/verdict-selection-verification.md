@@ -113,7 +113,18 @@ Client storage reads cannot observe a network write. Empty `localStorage`, `sess
 
 ### Follow-up sitting (request log)
 
-**How this was run:** `index.html` blob `d354f6da` was copied to `/tmp/embassy.html` and opened from disk. Bytes were not edited. The shipped `index.html` in the repo was not edited. Chromium was driven by Playwright. The instrument was Playwright's `page.on('request')` listener on that page. Only requests that listener reported are in this sitting. Traffic that Chromium does not surface there is outside this evidence.
+**How this was run:** The page under test (`index.html` on `main` / this branch) was written to `/tmp/embassy.html`. Before opening it, both files were hashed and compared.
+
+**Actual hashes (observed):**
+
+| File | `git hash-object` | SHA-256 |
+|---|---|---|
+| repo `index.html` (blob `d354f6da`) | `d354f6da1d895524c7a33e12da291af880ac64fc` | `dedf3a2f3769c56199077d4ad26aa9e4234ac83cc294793d3a6761583bf810e0` |
+| `/tmp/embassy.html` | `d354f6da1d895524c7a33e12da291af880ac64fc` | `dedf3a2f3769c56199077d4ad26aa9e4234ac83cc294793d3a6761583bf810e0` |
+
+`cmp` of the two files: identical. The request log ran on `/tmp/embassy.html` after that comparison. The shipped `index.html` was not edited.
+
+Chromium was driven by Playwright. The instrument was Playwright's `page.on('request')` listener on that page. Only requests that listener reported are in this sitting. Traffic that Chromium does not surface there is outside this evidence.
 
 Three clicks, reload, five clicks, with that listener attached for the whole sitting.
 
@@ -126,7 +137,7 @@ Three clicks, reload, five clicks, with that listener attached for the whole sit
 
 Under that listener: zero `http`, `https`, or `websocket` requests. Clicks did not add requests.
 
-**Match, no server write:** yes, under Playwright's `page.on('request')` on that copy of blob `d354f6da`. Storage reads are not used as proof of it. Absence is only as strong as that listener.
+**Match, no server write:** yes, under Playwright's `page.on('request')` on `/tmp/embassy.html`, whose `git hash-object` and SHA-256 matched the page under test as tabulated above. Storage reads are not used as proof of it. Absence is only as strong as that listener.
 
 ---
 
