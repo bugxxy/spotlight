@@ -1,10 +1,10 @@
 # Verdict selection — verification record
 
-Checked against [`docs/verdict-selection.md`](verdict-selection.md) on 17 September 2026. Page: `index.html` on `main` (blob `d354f6da`). Control: `#report`. Output: `#verdict`.
+Checked against [`docs/verdict-selection.md`](verdict-selection.md) on 17 September 2026. Page under test: `index.html` on `main`, git blob `d354f6da1d895524c7a33e12da291af880ac64fc` (short `d354f6da`). Control: `#report`. Output: `#verdict`. The shipped `index.html` in this branch is that blob; it was not edited for this record.
 
 This is a record of sittings on that page. A later visit will shuffle a different order. Do not treat these exact strings as the only legal sequence.
 
-Live list (N = 5):
+Live list (N = 5), copied from that blob's `lines` array:
 
 1. Verdict: the sock is on holiday in a dimension made of static cling.
 2. Verdict: your washing machine ate it. It will not apologize.
@@ -113,18 +113,20 @@ Client storage reads cannot observe a network write. Empty `localStorage`, `sess
 
 ### Follow-up sitting (request log)
 
-Three clicks, reload, five clicks, with every page request recorded.
+**How this was run:** `index.html` blob `d354f6da` was copied to `/tmp/embassy.html` and opened from disk. Bytes were not edited. The shipped `index.html` in the repo was not edited. Chromium was driven by Playwright. The instrument was Playwright's `page.on('request')` listener on that page. Only requests that listener reported are in this sitting. Traffic that Chromium does not surface there is outside this evidence.
 
-**Actual requests:**
+Three clicks, reload, five clicks, with that listener attached for the whole sitting.
+
+**Actual requests the listener reported:**
 
 | Method | URL | Type |
 |---|---|---|
 | GET | `file:///tmp/embassy.html` | document (first load) |
 | GET | `file:///tmp/embassy.html` | document (reload) |
 
-Zero `http`, `https`, or `websocket` requests. Clicks did not add requests.
+Under that listener: zero `http`, `https`, or `websocket` requests. Clicks did not add requests.
 
-**Match, no server write:** yes, on this sitting. Storage reads are not used as proof of it.
+**Match, no server write:** yes, under Playwright's `page.on('request')` on that copy of blob `d354f6da`. Storage reads are not used as proof of it. Absence is only as strong as that listener.
 
 ---
 
@@ -132,7 +134,7 @@ Zero `http`, `https`, or `websocket` requests. Clicks did not add requests.
 
 **Plan:** If the array is cut to one line, every click shows that line. Repeating it is correct. The seam constraint applies only when there are two or more lines.
 
-**How this was run:** `lines` in a copy of `index.html` was reduced to the static-cling line only. The shipped page was not edited.
+**How this was run:** `lines` in a copy of `index.html` blob `d354f6da` was reduced to the static-cling line only. The shipped page was not edited.
 
 **Actual:** `#verdict` started empty. Six clicks each showed:
 
