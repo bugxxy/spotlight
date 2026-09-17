@@ -118,8 +118,40 @@
       "Verdict: classified. Also, check inside the duvet. We never said that.",
       "Verdict: granted. You may wear mismatching socks in public with pride."
     ];
+    function shuffleCopy(source) {
+      const deck = source.slice();
+      for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = deck[i];
+        deck[i] = deck[j];
+        deck[j] = tmp;
+      }
+      return deck;
+    }
+
+    function startCycle(avoidLine) {
+      const deck = shuffleCopy(lines);
+      if (lines.length > 1 && avoidLine != null && deck[0] === avoidLine) {
+        const swapAt = 1 + Math.floor(Math.random() * (deck.length - 1));
+        const tmp = deck[0];
+        deck[0] = deck[swapAt];
+        deck[swapAt] = tmp;
+      }
+      return deck;
+    }
+
+    let cycle = [];
+    let nextIndex = 0;
+    let lastLine = null;
+
     document.getElementById("report").addEventListener("click", function () {
-      const line = lines[Math.floor(Math.random() * lines.length)];
+      if (nextIndex >= cycle.length) {
+        cycle = startCycle(lastLine);
+        nextIndex = 0;
+      }
+      const line = cycle[nextIndex];
+      nextIndex += 1;
+      lastLine = line;
       document.getElementById("verdict").textContent = line;
     });
   </script>
