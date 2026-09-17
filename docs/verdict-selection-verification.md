@@ -77,9 +77,9 @@ The same check on the next join: click 10 was “washing machine…”. The foll
 
 After the ten clicks above, the page was reloaded. `#verdict` was empty, then one click showed the static-cling line.
 
-That empty `#verdict` is also what a first load of `index.html` always shows. It does not prove shown-state was discarded. It also does not prove there is no localStorage or cookie. Those predictions need other evidence.
+That empty `#verdict` is also what a first load of `index.html` always shows. It does not prove shown-state was discarded. It also does not prove there is no localStorage, cookie, or server write.
 
-### Follow-up sitting (mid-cycle reload)
+### Follow-up sitting (mid-cycle reload, client storage)
 
 Three clicks, then reload, then five clicks. Storage was read after the three clicks, after reload, and after the five clicks.
 
@@ -103,7 +103,28 @@ Three clicks, then reload, then five clicks. Storage was read after the three cl
 
 Those five are the full list, each once. The second of them (“classified…”) was already used in the three clicks before reload, so this is not the remainder of the old cycle. Storage was still empty after the five clicks.
 
-**Match:** yes, on this follow-up sitting. The first sitting’s empty `#verdict` after reload is recorded above and is not used as proof of reset.
+Client storage reads cannot observe a network write. Empty `localStorage`, `sessionStorage`, and `document.cookie` are not evidence that the shown set was not sent to a server.
+
+**Match, shown-state after reload:** yes, on this sitting. The first sitting’s empty `#verdict` after reload is not used as proof of reset.
+
+**Match, no localStorage / sessionStorage / cookie:** yes, on the storage reads above.
+
+**Match, no server write:** not scored from this sitting.
+
+### Follow-up sitting (request log)
+
+Three clicks, reload, five clicks, with every page request recorded.
+
+**Actual requests:**
+
+| Method | URL | Type |
+|---|---|---|
+| GET | `file:///tmp/embassy.html` | document (first load) |
+| GET | `file:///tmp/embassy.html` | document (reload) |
+
+Zero `http`, `https`, or `websocket` requests. Clicks did not add requests.
+
+**Match, no server write:** yes, on this sitting. Storage reads are not used as proof of it.
 
 ---
 
