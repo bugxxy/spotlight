@@ -2,7 +2,7 @@
 
 Checked against [`docs/verdict-selection.md`](verdict-selection.md) on 17 September 2026. Page: `index.html` on `main` (blob `d354f6da`). Control: `#report`. Output: `#verdict`.
 
-This is a record of one sitting. A later visit will shuffle a different order. Do not treat these exact strings as the only legal sequence.
+This is a record of sittings on that page. A later visit will shuffle a different order. Do not treat these exact strings as the only legal sequence.
 
 Live list (N = 5):
 
@@ -12,7 +12,7 @@ Live list (N = 5):
 4. Verdict: classified. Also, check inside the duvet. We never said that.
 5. Verdict: granted. You may wear mismatching socks in public with pride.
 
-**Mismatches: none.** Every case below matched the plan. Nothing was changed on the page.
+**Mismatches: none.** Nothing was changed on the page.
 
 ---
 
@@ -71,15 +71,39 @@ The same check on the next join: click 10 was “washing machine…”. The foll
 
 ## 4. Refresh
 
-**Plan:** Reload clears `#verdict`. Shown-state is gone. The next click is a first click of a new visit. No localStorage or cookie.
+**Plan:** Reload clears `#verdict`. Shown-state is gone. The next click is a first click of a new visit. Do not write the shown set to localStorage, a cookie, or a server.
 
-**Actual:** After the ten clicks, the page was reloaded. `#verdict` was empty. The next click showed:
+### What the first sitting could not test
 
-> Verdict: the sock is on holiday in a dimension made of static cling.
+After the ten clicks above, the page was reloaded. `#verdict` was empty, then one click showed the static-cling line.
 
-That is a legal first-click line. It matching click 1 of the previous visit is allowed: repeats across visits are accepted.
+That empty `#verdict` is also what a first load of `index.html` always shows. It does not prove shown-state was discarded. It also does not prove there is no localStorage or cookie. Those predictions need other evidence.
 
-**Match:** yes.
+### Follow-up sitting (mid-cycle reload)
+
+Three clicks, then reload, then five clicks. Storage was read after the three clicks, after reload, and after the five clicks.
+
+**Actual, before reload:**
+
+1. Verdict: your washing machine ate it. It will not apologize.
+2. Verdict: granted. You may wear mismatching socks in public with pride.
+3. Verdict: classified. Also, check inside the duvet. We never said that.
+
+`localStorage` keys: none. `sessionStorage` keys: none. `document.cookie`: empty.
+
+**Actual, after reload:** `#verdict` empty. Same empty storage.
+
+**Actual, five clicks after reload:**
+
+1. Verdict: the pair is fine. It simply prefers to live separately now.
+2. Verdict: classified. Also, check inside the duvet. We never said that.
+3. Verdict: granted. You may wear mismatching socks in public with pride.
+4. Verdict: the sock is on holiday in a dimension made of static cling.
+5. Verdict: your washing machine ate it. It will not apologize.
+
+Those five are the full list, each once. The second of them (“classified…”) was already used in the three clicks before reload, so this is not the remainder of the old cycle. Storage was still empty after the five clicks.
+
+**Match:** yes, on this follow-up sitting. The first sitting’s empty `#verdict` after reload is recorded above and is not used as proof of reset.
 
 ---
 
