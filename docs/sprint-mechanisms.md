@@ -24,11 +24,18 @@ Reload clears `#verdict` because the string lives only in the DOM. That part was
 
 ### New (the cycle rule now in `index.html`)
 
+Statement order in the click handler:
+
 1. Visitor loads `index.html`. `#verdict` is empty. `cycle` is empty, `nextIndex` is 0, `lastLine` is null. Nothing is in localStorage, a cookie, or a server.
 2. Visitor clicks `#report`.
 3. If `nextIndex >= cycle.length` (true on the first click, and after the last card of a cycle), the page copies `lines`, Fisher-Yates shuffles that copy, and — when there is more than one line and `lastLine` is set and the new first card equals it — swaps the first card with a later card. That permutation **is** the cycle. `nextIndex` is set to 0.
-4. The page shows `cycle[nextIndex]`, then increments `nextIndex`, then stores that string as `lastLine`.
-5. The handler is synchronous. The next click, including a rapid one, takes the next card or starts a new cycle. `#verdict` is never left blank by a click.
+4. The handler reads `cycle[nextIndex]` into a local `line`.
+5. It increments `nextIndex`.
+6. It stores `lastLine = line`.
+7. It writes `line` into `#verdict`.
+8. The handler returns. It is synchronous, so the next click, including a rapid one, starts at step 3 with the updated index and last line. A click never writes an empty string into `#verdict`.
+
+The DOM is updated last. Memory (`nextIndex`, `lastLine`) is already the post-click state when the visitor can see the new verdict.
 
 **Guarantee.** Inside one cycle, no line repeats until every line has been shown once. Clicks 1–5 are five distinct lines. Clicks 6–10 are five distinct lines. The same for every later block of N that starts on a cycle boundary.
 
@@ -59,6 +66,7 @@ Lars approved PR #3 with no findings. The mechanism he checked, restated:
 - When the index reaches the deck length, build a new shuffle. If N > 1 and the new first card equals `lastLine`, swap it off the front.
 - Skip that swap when N = 1: the single line is the whole cycle, and repeating it is the only legal behaviour.
 - State lives in page memory (`cycle`, `nextIndex`, `lastLine`). Reload reconstructs the script from zero, so the cycle resets.
+- On each click the handler reads the card, increments the index, stores `lastLine`, then writes `#verdict`. The DOM update is last.
 - The click path is synchronous, so two clicks in quick succession cannot interleave two shuffles or write an empty string.
 
 **What can still go wrong, and is out of scope for that ticket.** Lars could not run bash in that session, so he could not inspect a raw diff or history. He judged the three files he could see (`index.html`, `docs/verdict-selection.md`, `README.md`). A change hiding in some other file would have been invisible to that review. There was no other file.
